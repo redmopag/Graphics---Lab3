@@ -8,8 +8,8 @@
 #include "pipeline.h"
 #include "camera.h"
 
-#define WINDOW_WIDTH 612
-#define WINDOW_HEIGHT 484
+#define WINDOW_WIDTH 1024
+#define WINDOW_HEIGHT 768
 
 // Буфер вершин
 GLuint VBO;
@@ -18,7 +18,7 @@ GLuint IBO;
 // Система координат камеры
 GLuint gWVPLocation;
 
-Camera GameCamera; // Переменная, содержащая значения камеры
+Camera* pGameCamera = nullptr; // Переменная, содержащая значения камеры
 
 static const char* pVS = "                                                          \n\
 #version 330                                                                        \n\
@@ -49,17 +49,20 @@ void main()                                                                     
 
 static void RenderSceneCB()
 {
+    pGameCamera->OnRender();
+
     glClear(GL_COLOR_BUFFER_BIT);
 
     static float Scale = 0.0f; // Масштаб
 
     Scale += 0.1f; // Изменяем для движения
 
+    // Конвейер
     Pipeline p;
     p.Rotate(0.0f, Scale, 0.0f);
     p.WorldPos(0.0f, 0.0f, 3.0f);
     // Установка камеры
-    p.SetCamera(GameCamera.GetPos(), GameCamera.GetTarget(), GameCamera.GetUp());
+    p.SetCamera(pGameCamera->GetPos(), pGameCamera->GetTarget(), pGameCamera->GetUp());
     // Установка перпективы
     p.SetPerspectiveProj(60.0f, WINDOW_WIDTH, WINDOW_HEIGHT, 1.0f, 100.0f);
 
@@ -81,16 +84,36 @@ static void RenderSceneCB()
 // Принимает занчение клавиши и координаты мыши в момент нажатия клавиши
 static void SpecialKeyboardCB(int key, int x, int y)
 {
-    GameCamera.OnKeyboard(key);
+    pGameCamera->OnKeyboard(key);
+}
+
+// Для завершения программы
+static void KeyboardCB(unsigned char Key, int x, int y)
+{
+    switch (Key) {
+    case 'q':
+        exit(0);
+    }
+}
+
+// Функция обратного вызова, вызывающая метод OnMouse класса Camera
+static void PassiveMouseCB(int x, int y)
+{
+    pGameCamera->OnMouse(x, y);
 }
 
 static void InitializeGlutCallbacks()
 {
+    // Показывает изображение на экран
     glutDisplayFunc(RenderSceneCB);
     // функция рендера, вызывающая только при получении определённого события
     glutIdleFunc(RenderSceneCB);
     // Регистрация новой функции обратного вызова для получения специальных событий клавиатуры
     glutSpecialFunc(SpecialKeyboardCB);
+    // Регестрирует движение мыши
+    glutPassiveMotionFunc(PassiveMouseCB);
+    // Регестрирует нажатие клавиши
+    glutKeyboardFunc(KeyboardCB);
 }
 
 static void CreateVertexBuffer()
@@ -211,10 +234,17 @@ int main(int argc, char** argv)
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-    glutInitWindowPosition(100, 100);
+    glutInitWindowPosition(210, 20);
     glutCreateWindow("Main");
+    // Разрешение и количество бит на пиксель
+    glutGameModeString("1280x1024@32");
+    // Запускаться в полноэкранном режиме
+    glutEnterGameMode();
 
     InitializeGlutCallbacks();
+
+    // Инициализация камеры
+    pGameCamera = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT);
 
     GLenum res = glewInit();
     if (res != GLEW_OK) {

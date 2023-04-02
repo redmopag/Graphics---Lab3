@@ -10,6 +10,13 @@
 #define ToRadian(x) ((x) * M_PI / 180.0f)
 #define ToDegree(x) ((x) * 180.0f / M_PI)
 
+// Структура для позиции мыши
+struct Vector2i
+{
+    int x;
+    int y;
+};
+
 struct Vector3f
 {
     // Координаты x, y, z для вектора
@@ -62,6 +69,9 @@ struct Vector3f
     
     // нормализация вектора
     Vector3f& Normalize();
+
+    // Вращения вектора на угол Angle вокруг вектора Axis
+    void Rotate(float Angle, const Vector3f& Axe);
 
     void Print() const
     {
@@ -132,5 +142,24 @@ public:
     void InitPersProjTransform(float FOV, float Width, float Height, float zNear, float zFar);
 };
 
+// Квантернион для вращения вектора вокруг другого вектора
+struct Quaternion
+{
+    // Координаты
+    float x, y, z, w;
+
+    // Конструктор
+    Quaternion(float _x, float _y, float _z, float _w);
+
+    // Нормализация
+    void Normalize();
+
+    // Возвращает квантернион с обратными значениями x, y, z
+    Quaternion Conjugate();
+};
+
+Quaternion operator*(const Quaternion& l, const Quaternion& r);
+
+Quaternion operator*(const Quaternion& q, const Vector3f& v);
 
 #endif	/* MATH_3D_H */
