@@ -164,7 +164,7 @@ static void CreateIndexBuffer()
     unsigned int Indices[] = { 0, 3, 1,
                                1, 3, 2,
                                2, 3, 0,
-                               0, 2, 1 };
+                               1, 2, 0 };
 
     glGenBuffers(1, &IBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
@@ -254,7 +254,7 @@ static void CompileShaders()
     glUseProgram(ShaderProgram);
 
     // Запрашиваем позицию uniform-переменной
-    gWVPLocation = glGetUniformLocation(ShaderProgram, "gWorld");
+    gWVPLocation = glGetUniformLocation(ShaderProgram, "gWVP");
     assert(gWVPLocation != 0xFFFFFFFF);
 
     gSampler = glGetUniformLocation(ShaderProgram, "gSampler");
@@ -268,10 +268,10 @@ int main(int argc, char** argv)
     glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
     glutInitWindowPosition(210, 20);
     glutCreateWindow("Main");
-    // Разрешение и количество бит на пиксель
-    glutGameModeString("1280x1024@32");
-    // Запускаться в полноэкранном режиме
-    glutEnterGameMode();
+    //// Разрешение и количество бит на пиксель
+    //glutGameModeString("1024x768@32");
+    //// Запускаться в полноэкранном режиме
+    //glutEnterGameMode();
 
     InitializeGlutCallbacks();
 
@@ -300,7 +300,7 @@ int main(int argc, char** argv)
     glUniform1i(gSampler, 0);
 
     // Открываем изображение
-    pTexture = new Texture(GL_TEXTURE_2D, "D:\test.png");
+    pTexture = new Texture(GL_TEXTURE_2D, "D:\est.png");
 
     // Загружаем изображение в память программы
     if (!pTexture->Load()) {
