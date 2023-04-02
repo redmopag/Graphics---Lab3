@@ -4,12 +4,28 @@
 #include <math.h>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
+
 #include "math_3d.h"
 #include "pipeline.h"
 #include "camera.h"
+#include "texture.h"
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
+
+struct Vertex
+{
+    Vector3f m_pos; // Координата фигуры
+    Vector2f m_tex; // Координата текстуры
+
+    Vertex() {}
+
+    Vertex(Vector3f pos, Vector2f tex)
+    {
+        m_pos = pos;
+        m_tex = tex;
+    }
+};
 
 // Буфер вершин
 GLuint VBO;
@@ -18,34 +34,43 @@ GLuint IBO;
 // Система координат камеры
 GLuint gWVPLocation;
 
+GLuint gSampler; // Семплер для текстуры
+Texture* pTexture = NULL; // Указатель на начало данных текстуры
+
 Camera* pGameCamera = nullptr; // Переменная, содержащая значения камеры
 
+// Вершинный шейдер
 static const char* pVS = "                                                          \n\
 #version 330                                                                        \n\
                                                                                     \n\
 layout (location = 0) in vec3 Position;                                             \n\
+layout (location = 1) in vec2 TexCoord;                                             \n\
                                                                                     \n\
-uniform mat4 gWorld;                                                                \n\
+uniform mat4 gWVP;                                                                  \n\
                                                                                     \n\
-out vec4 Color;                                                                     \n\
+out vec2 TexCoord0;                                                                 \n\
                                                                                     \n\
 void main()                                                                         \n\
 {                                                                                   \n\
-    gl_Position = gWorld * vec4(Position, 1.0);                                     \n\
-    Color = vec4(clamp(Position, 0.0, 1.0), 1.0);                                   \n\
+    gl_Position = gWVP * vec4(Position, 1.0);                                       \n\
+    TexCoord0 = TexCoord;                                                           \n\
 }";
 
+// Фрагментный шейдер
 static const char* pFS = "                                                          \n\
 #version 330                                                                        \n\
                                                                                     \n\
-in vec4 Color;                                                                      \n\
+in vec2 TexCoord0;                                                                  \n\
                                                                                     \n\
 out vec4 FragColor;                                                                 \n\
                                                                                     \n\
+uniform sampler2D gSampler;                                                         \n\
+                                                                                    \n\
 void main()                                                                         \n\
 {                                                                                   \n\
-    FragColor = Color;                                                              \n\
+    FragColor = texture2D(gSampler, TexCoord0.xy);                                  \n\
 }";
+
 
 static void RenderSceneCB()
 {
@@ -69,13 +94,16 @@ static void RenderSceneCB()
     glUniformMatrix4fv(gWVPLocation, 1, GL_TRUE, (const GLfloat*)p.GetTrans());
 
     glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)12);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-
+    pTexture->Bind(GL_TEXTURE0);
     glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
 
     glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
 
     glutSwapBuffers();
 }
@@ -92,7 +120,7 @@ static void KeyboardCB(unsigned char Key, int x, int y)
 {
     switch (Key) {
     case 'q':
-        exit(0);
+        glutLeaveMainLoop();
     }
 }
 
@@ -116,16 +144,17 @@ static void InitializeGlutCallbacks()
     glutKeyboardFunc(KeyboardCB);
 }
 
+// Создание вершинного буфера
 static void CreateVertexBuffer()
 {
-    Vector3f Vertices[4];
-    Vertices[0] = Vector3f(-1.0f, -1.0f, 0.5773f);
-    Vertices[1] = Vector3f(0.0f, -1.0f, -1.15475);
-    Vertices[2] = Vector3f(1.0f, -1.0f, 0.5773f);
-    Vertices[3] = Vector3f(0.0f, 1.0f, 0.0f);
+    Vertex Vertices[4] = { Vertex(Vector3f(-1.0f, -1.0f, 0.5773f), Vector2f(0.0f, 0.0f)),
+                           Vertex(Vector3f(0.0f, -1.0f, -1.15475), Vector2f(0.5f, 0.0f)),
+                           Vertex(Vector3f(1.0f, -1.0f, 0.5773f),  Vector2f(1.0f, 0.0f)),
+                           Vertex(Vector3f(0.0f, 1.0f, 0.0f),      Vector2f(0.5f, 1.0f)) };
 
+    // Привязка буфера (буфер один) к переменной
     glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO); // Найстройка VBO
     glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
 }
 
@@ -227,6 +256,9 @@ static void CompileShaders()
     // Запрашиваем позицию uniform-переменной
     gWVPLocation = glGetUniformLocation(ShaderProgram, "gWorld");
     assert(gWVPLocation != 0xFFFFFFFF);
+
+    gSampler = glGetUniformLocation(ShaderProgram, "gSampler");
+    assert(gSampler != 0xFFFFFFFF);
 }
 
 int main(int argc, char** argv)
@@ -254,10 +286,26 @@ int main(int argc, char** argv)
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
+    // Необязательный: для улучшения картинки
+    glFrontFace(GL_CW);
+    glCullFace(GL_BACK);
+    glEnable(GL_CULL_FACE);
+
     CreateVertexBuffer();
     CreateIndexBuffer();
 
     CompileShaders();
+
+    // Устанавливаем индексы модулей текстуры
+    glUniform1i(gSampler, 0);
+
+    // Открываем изображение
+    pTexture = new Texture(GL_TEXTURE_2D, "D:\test.png");
+
+    // Загружаем изображение в память программы
+    if (!pTexture->Load()) {
+        return 1;
+    }
 
     glutMainLoop();
 
