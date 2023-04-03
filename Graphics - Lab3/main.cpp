@@ -35,7 +35,7 @@ GLuint IBO;
 GLuint gWVPLocation;
 
 GLuint gSampler; // Семплер для текстуры
-Texture* pTexture = NULL; // Указатель на начало данных текстуры
+Texture* pTexture = nullptr; // Указатель на начало данных текстуры
 
 Camera* pGameCamera = nullptr; // Переменная, содержащая значения камеры
 
@@ -300,7 +300,7 @@ int main(int argc, char** argv)
     glUniform1i(gSampler, 0);
 
     // Открываем изображение
-    pTexture = new Texture(GL_TEXTURE_2D, "D:\est.png");
+    pTexture = new Texture(GL_TEXTURE_2D, "test2.png");
 
     // Загружаем изображение в память программы
     if (!pTexture->Load()) {

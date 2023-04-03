@@ -35,7 +35,7 @@ bool Texture::Load()
     // 4 и 5 - ширина и высота текстуры в тексел€х, 6 - рамка
     // ѕоследние три параметра - указывают источник вход€щих данных: формат, тип и адрес пам€ти
     // ‘ормат должен соответствовать значению в BLOB, тип - вид данных относительно каждого канала
-    glTexImage2D(m_textureTarget, 0, GL_RGB, m_pImage->columns(), m_pImage->rows(), 0, GL_RGBA, GL_UNSIGNED_BYTE, m_blob.data());
+    glTexImage2D(m_textureTarget, 0, GL_RGB, m_pImage->columns(), m_pImage->rows(), -0.5, GL_RGBA, GL_UNSIGNED_BYTE, m_blob.data());
     // функци€ glTexParameterf управл€ет многими аспектами операции выборки текстур.
     // Ёти аспекты - часть состо€ни€ сэмплера текстуры
     // ѕодправка текстелей на пиксель, если иозбражение будет слишком большим или маленьким под
