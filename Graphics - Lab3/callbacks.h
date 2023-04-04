@@ -12,5 +12,6 @@ public:
     virtual void PassiveMouseCB(int x, int y) = 0;
     // Рендер сцены
     virtual void RenderSceneCB() = 0;
+    // Просто функция, которая хранит дргую функцию - RenderSceneCB
     virtual void IdleCB() = 0;
 };

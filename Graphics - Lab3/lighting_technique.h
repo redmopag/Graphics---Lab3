@@ -17,8 +17,11 @@ public:
     LightingTechnique();
     virtual bool Init(); // Создание шейдеров вызывает методы добавления шейдеров и линковки с проверкой
 
+    // Настройка мировых координат
     void SetWVP(const Matrix4f* WVP);
+    // Настройка текстур
     void SetTextureUnit(unsigned int TextureUnit);
+    // Настройка направления света
     void SetDirectionalLight(const DirectionLight& Light);
 
 private:
