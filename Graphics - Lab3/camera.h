@@ -60,12 +60,6 @@ private:
     float m_AngleH; // Горизонтальный угол - для врадения камеры влево\вправо
     float m_AngleV; // Вертиакльный угол - для вращения камеры вверх\вниз
 
-    // Флаги, указывающие находится ли указатель мыши на границе экрана
-    bool m_OnUpperEdge;
-    bool m_OnLowerEdge;
-    bool m_OnLeftEdge;
-    bool m_OnRightEdge;
-
     Vector2i m_mousePos; // Позиция мыши
 };
 

@@ -69,11 +69,6 @@ void Camera::Init()
     // Минус нужен, чтоб не вращался в противоположную от движения мыши сторону
     m_AngleV = -ToDegree(asin(m_target.y));
 
-    // Проверка курсора, лежит ли он на крае экрана
-    m_OnUpperEdge = false;
-    m_OnLowerEdge = false;
-    m_OnLeftEdge = false;
-    m_OnRightEdge = false;
     // Настройка позиции мыши в середине экрана
     m_mousePos.x = m_windowWidth / 2;
     m_mousePos.y = m_windowHeight / 2;
@@ -133,50 +128,21 @@ bool Camera::OnKeyboard(int Key)
 // Обрабатывает движение мыши
 void Camera::OnMouse(int x, int y)
 {
+    if ((x == m_mousePos.x) && (y == m_mousePos.y)) return;
+
     // Высчитывается изменение координат мыши
     const int DeltaX = x - m_mousePos.x;
     const int DeltaY = y - m_mousePos.y;
-
-    // Новые координаты фиксируются как текущие
-    m_mousePos.x = x;
-    m_mousePos.y = y;
 
     // Расчитывается горизонтальный и вертикальный углы
     // 20.0f нужен для скорости изменения
     m_AngleH += (float)DeltaX / 20.0f;
     m_AngleV += (float)DeltaY / 20.0f;
 
-    // Обновляем флаги границ экрана согласно положению курсора
-    if (DeltaX == 0) {
-        if (x <= MARGIN) {
-            //    m_AngleH -= 1.0f;
-            m_OnLeftEdge = true;
-        }
-        else if (x >= (m_windowWidth - MARGIN)) {
-            //    m_AngleH += 1.0f;
-            m_OnRightEdge = true;
-        }
-    }
-    else {
-        m_OnLeftEdge = false;
-        m_OnRightEdge = false;
-    }
-
-    if (DeltaY == 0) {
-        if (y <= MARGIN) {
-            m_OnUpperEdge = true;
-        }
-        else if (y >= (m_windowHeight - MARGIN)) {
-            m_OnLowerEdge = true;
-        }
-    }
-    else {
-        m_OnUpperEdge = false;
-        m_OnLowerEdge = false;
-    }
-
     // Оновляем векторы направления и вверх
     Update();
+
+    glutWarpPointer(m_mousePos.x, m_mousePos.y);
 }
 
 // вызвывается из главного цикла рендера
@@ -185,30 +151,6 @@ void Camera::OnMouse(int x, int y)
 void Camera::OnRender()
 {
     bool ShouldUpdate = false;
-
-    // Проверяем какой флаг положения курсора активен
-    // И в соответствии с ним меняем горизонтальный и/или вертикальный углы
-    if (m_OnLeftEdge) {
-        m_AngleH -= 0.1f;
-        ShouldUpdate = true;
-    }
-    else if (m_OnRightEdge) {
-        m_AngleH += 0.1f;
-        ShouldUpdate = true;
-    }
-
-    if (m_OnUpperEdge) {
-        if (m_AngleV > -90.0f) {
-            m_AngleV -= 0.1f;
-            ShouldUpdate = true;
-        }
-    }
-    else if (m_OnLowerEdge) {
-        if (m_AngleV < 90.0f) {
-            m_AngleV += 0.1f;
-            ShouldUpdate = true;
-        }
-    }
 
     // Если углы изменились, пересчитываем вектора направления и вверх
     if (ShouldUpdate) {

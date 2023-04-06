@@ -39,8 +39,8 @@ public:
         m_pEffect = NULL;
         m_scale = 0.0f;
         m_directionalLight.Color = Vector3f(1.0f, 1.0f, 1.0f);
-        m_directionalLight.AmbientIntensity = 0.0f;
-        m_directionalLight.DiffuseIntensity = 0.75f;
+        m_directionalLight.AmbientIntensity = -0.1f;
+        m_directionalLight.DiffuseIntensity = 0.0f;
         m_directionalLight.Direction = Vector3f(1.0f, 0.0, 0.0);
     }
 
@@ -54,16 +54,15 @@ public:
     bool Init()
     {
         // Векторы, описывающие камеру по-умолчанию
-        Vector3f Pos(0.0f, 0.0f, -3.0f);
+        Vector3f Pos(0.0f, 0.0f, 0.0f);
         Vector3f Target(0.0f, 0.0f, 1.0f);
         Vector3f Up(0.0, 1.0f, 0.0f);
 
         m_pGameCamera = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT, Pos, Target, Up);
 
         unsigned int Indices[] = { 0, 3, 1,
-                                   1, 3, 2,
-                                   2, 3, 0,
-                                   1, 2, 0 };
+        unsigned int Indices[] = { 0, 2, 1,
+                                   0, 3, 2 };
 
         CreateVertexBuffer(Indices, ARRAY_SIZE_IN_ELEMENTS(Indices));
         CreateIndexBuffer(Indices, sizeof(Indices));
@@ -102,10 +101,22 @@ public:
 
         m_scale += 0.1f; // Изменяем масштаб для движения
 
+        // Настроивание точки света
+        PointLight pl[3];
+        pl[0].DiffuseIntensity = 0.5f;
+        pl[0].Color = Vector3f(1.0f, 0.0f, 0.0f);
+        pl[1].Attenuation.Linear = 0.1f;
+
+        pl[2].DiffuseIntensity = 0.5f;
+        pl[2].Color = Vector3f(0.0f, 0.0f, 1.0f);
+        pl[2].Position = Vector3f(sinf(m_scale + 4.2f) * 10, 1.0f, cosf(m_scale + 4.2f) * 10);
+        pl[2].Attenuation.Linear = 0.1f;
+
         // Конвейер для камеры
         Pipeline p;
         // Вращение
         p.Rotate(0.0f, m_scale, 0.0f);
+        p.Rotate(0.0f, 0.0f, 0.0f);
         // Мировая позиция
         p.WorldPos(0.0f, 0.0f, 3.0f);
         // Настройка позиции камеры
@@ -136,7 +147,6 @@ public:
         glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)20);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
         m_pTexture->Bind(GL_TEXTURE0);
-        glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
@@ -215,10 +225,12 @@ private:
     // Создание буфера вершин
     void CreateVertexBuffer(const unsigned int* pIndices, unsigned int IndexCount)
     {
-        Vertex Vertices[4] = { Vertex(Vector3f(-1.0f, -1.0f, 0.5773f), Vector2f(0.0f, 0.0f)),
                                Vertex(Vector3f(0.0f, -1.0f, -1.15475), Vector2f(0.5f, 0.0f)),
                                Vertex(Vector3f(1.0f, -1.0f, 0.5773f),  Vector2f(1.0f, 0.0f)),
-                               Vertex(Vector3f(0.0f, 1.0f, 0.0f),      Vector2f(0.5f, 1.0f)) };
+        Vertex Vertices[4] = { Vertex(Vector3f(-10.0f, -2.0f, -10.0f), Vector2f(0.0f, 0.0f)),
+                               Vertex(Vector3f(10.0f, -2.0f, -10.0f), Vector2f(1.0f, 0.0f)),
+                               Vertex(Vector3f(10.0f, -2.0f, 10.0f), Vector2f(1.0f, 1.0f)),
+                               Vertex(Vector3f(-10.0f, -2.0f, 10.0f), Vector2f(0.0f, 1.0f)) };
 
         unsigned int VertexCount = ARRAY_SIZE_IN_ELEMENTS(Vertices);
 

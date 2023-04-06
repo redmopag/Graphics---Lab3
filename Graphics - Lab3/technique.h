@@ -3,6 +3,8 @@
 #include <GL/glew.h>
 #include <list>
 
+#define INVALID_UNIFORM_LOCATION 0xFFFFFFFF
+
 class Technique
 {
 public:
