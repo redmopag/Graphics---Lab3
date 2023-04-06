@@ -4,12 +4,54 @@
 #include "math_3d.h"
 
 // Определение направления света
-struct DirectionLight
+#define MAX_POINT_LIGHTS 3
+
+// Базовое освящение
+struct BaseLight
 {
-    Vector3f Color;
-    float AmbientIntensity;
+    Vector3f Color; // Цвет
+    float AmbientIntensity; // Внешняя интенсивность 
+    float DiffuseIntensity; // Интенсивность рассеивания
+
+    BaseLight()
+    {
+        Color = Vector3f(0.0f, 0.0f, 0.0f);
+        AmbientIntensity = 0.0f;
+        DiffuseIntensity = 0.0f;
+    }
+};
+
+// Направленное освящение 
+struct DirectionalLight : public BaseLight
+{
     Vector3f Direction; // Направление
-    float DiffuseIntensity; // интенсивность рассеивания
+
+    DirectionalLight()
+    {
+        Direction = Vector3f(0.0f, 0.0f, 0.0f);
+    }
+};
+
+// Точечное освящение
+struct PointLight : public BaseLight
+{
+    Vector3f Position; // Позиция точки освящения
+
+    // Коэфициенты затухания
+    struct
+    {
+        float Constant;
+        float Linear;
+        float Exp;
+    } Attenuation;
+
+    PointLight()
+    {
+        Position = Vector3f(0.0f, 0.0f, 0.0f);
+        Attenuation.Constant = 1.0f;
+        Attenuation.Linear = 0.0f;
+        Attenuation.Exp = 0.0f;
+    }
 };
 
 // Методы освящения
@@ -27,7 +69,7 @@ public:
     void SetTextureUnit(unsigned int TextureUnit);
     // Функция назначает параметры направленного света в шейдере
     // Ещё нужна для вектора направления и интенсивности рассеивания
-    void SetDirectionalLight(const DirectionLight& Light);
+    void SetDirectionalLight(const DirectionalLight& Light);
 
     // Настройка положения глаза
     void SetEyeWorldPos(const Vector3f& EyeWorldPos);
@@ -36,14 +78,18 @@ public:
     // Настройка коэфициента материала
     void SetMatSpecularPower(float Power);
 
+    // Устанавливает точки света
+    void SetPointLights(unsigned int NumLights, const PointLight* pLights);
+
 private:
     GLuint m_WVPLocation; // Система координат камеры
     GLuint m_WorldMatrixLocation; // Матрица мировых преобразований
     GLuint m_samplerLocation; // Семплер для текстуры
 
-    GLuint m_eyeWorldPosition; // Позиция галаз
+    GLuint m_eyeWorldPosLocation; // Позиция галаз
     GLuint m_matSpecularIntensityLocation; // Интенсивность освящения
     GLuint m_matSpecularPowerLocation; // Коэфициент материала
+    GLuint m_numPointLightsLocation; // Расположения точек света
 
     struct {
         GLuint Color;
@@ -51,4 +97,16 @@ private:
         GLuint Direction;
         GLuint DiffuseIntensity;
     } m_dirLightLocation; // Структура, описывывающая направленный свет
+
+    struct {
+        GLuint Color;
+        GLuint AmbientIntensity;
+        GLuint DiffuseIntensity;
+        GLuint Position;
+        struct {
+            GLuint Constant;
+            GLuint Linear;
+            GLuint Exp;
+        } Atten;
+    } m_pointLightsLocation[MAX_POINT_LIGHTS];  // Структура, описывающая точечный свет
 };
