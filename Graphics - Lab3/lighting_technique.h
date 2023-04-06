@@ -54,10 +54,26 @@ struct PointLight : public BaseLight
     }
 };
 
+// Структура для описывания прожектора
+struct SpotLight : public PointLight
+{
+    Vector3f Direction;
+    float Cutoff;
+
+    SpotLight()
+    {
+        Direction = Vector3f(0.0f, 0.0f, 0.0f);
+        Cutoff = 0.0f;
+    }
+};
+
 // Методы освящения
 class LightingTechnique : public Technique
 {
 public:
+    static const unsigned int MAX_POINT_LIGHTS = 2;
+    static const unsigned int MAX_SPOT_LIGHTS = 2;
+
     LightingTechnique();
     virtual bool Init(); // Создание шейдеров вызывает методы добавления шейдеров и линковки с проверкой
 
@@ -80,6 +96,7 @@ public:
 
     // Устанавливает точки света
     void SetPointLights(unsigned int NumLights, const PointLight* pLights);
+    void SetSpotLights(unsigned int NumLights, const SpotLight* pLights);
 
 private:
     GLuint m_WVPLocation; // Система координат камеры
@@ -90,6 +107,7 @@ private:
     GLuint m_matSpecularIntensityLocation; // Интенсивность освящения
     GLuint m_matSpecularPowerLocation; // Коэфициент материала
     GLuint m_numPointLightsLocation; // Расположения точек света
+    GLuint m_numSpotLightsLocation; // Расположение прожектор
 
     struct {
         GLuint Color;
@@ -109,4 +127,18 @@ private:
             GLuint Exp;
         } Atten;
     } m_pointLightsLocation[MAX_POINT_LIGHTS];  // Структура, описывающая точечный свет
+
+    struct {
+        GLuint Color;
+        GLuint AmbientIntensity;
+        GLuint DiffuseIntensity;
+        GLuint Position;
+        GLuint Direction;
+        GLuint Cutoff;
+        struct {
+            GLuint Constant;
+            GLuint Linear;
+            GLuint Exp;
+        } Atten;
+    } m_spotLightsLocation[MAX_SPOT_LIGHTS]; // Описывает прожектор
 };
