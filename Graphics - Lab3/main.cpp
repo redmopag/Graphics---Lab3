@@ -265,7 +265,7 @@ private:
     Texture* m_pTexture;
     Camera* m_pGameCamera;
     float m_scale;
-    DirectionLight m_directionalLight;
+    DirectionalLight m_directionalLight;
 };
 
 int main(int argc, char** argv)
