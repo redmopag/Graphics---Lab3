@@ -57,7 +57,11 @@ public:
         m_camera.Up = Up;
     }
 
-    const Matrix4f* GetTrans();
+    // Мировые координаты для расположения текстур и фигур
+    const Matrix4f& GetWVPTrans();
+
+    // Мироваые координаты для определения нормали и света
+    const Matrix4f& GetWorldTrans();
 
 private:
 
@@ -81,7 +85,9 @@ private:
         Vector3f Up;
     } m_camera;
 
-    Matrix4f m_transformation;
+    // Матрицы трансформации
+    Matrix4f m_WVPtransformation;
+    Matrix4f m_WorldTransformation;
 };
 
 

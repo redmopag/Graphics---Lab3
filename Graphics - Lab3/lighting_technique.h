@@ -8,6 +8,8 @@ struct DirectionLight
 {
     Vector3f Color;
     float AmbientIntensity;
+    Vector3f Direction; // Направление
+    float DiffuseIntensity; // интенсивность рассеивания
 };
 
 // Методы освящения
@@ -19,14 +21,22 @@ public:
 
     // Настройка мировых координат
     void SetWVP(const Matrix4f* WVP);
+    // Функция для отправления матрицы мировых преобразований
+    void SetWorldMatrix(const Matrix4f& WVP);
     // Настройка текстур
     void SetTextureUnit(unsigned int TextureUnit);
-    // Настройка направления света
+    // Функция назначает параметры направленного света в шейдере
+    // Ещё нужна для вектора направления и интенсивности рассеивания
     void SetDirectionalLight(const DirectionLight& Light);
 
 private:
     GLuint m_WVPLocation; // Система координат камеры
+    GLuint m_WorldMatrixLocation; // Матрица мировых преобразований
     GLuint m_samplerLocation; // Семплер для текстуры
-    GLuint m_dirLightColorLocation; // Цвет освещения
-    GLuint m_dirLightAmbientIntensityLocation; // Интенсивность
+    struct {
+        GLuint Color;
+        GLuint AmbientIntensity;
+        GLuint Direction;
+        GLuint DiffuseIntensity;
+    } m_dirLightLocation; // Структура, описывывающая направленный свет
 };

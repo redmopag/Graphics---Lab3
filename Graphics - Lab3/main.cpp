@@ -15,6 +15,7 @@ struct Vertex
 {
     Vector3f m_pos; // Координата фигуры
     Vector2f m_tex; // Координата текстуры
+    Vector3f m_normal; // Координаты нормали
 
     Vertex() {}
 
@@ -22,6 +23,7 @@ struct Vertex
     {
         m_pos = pos;
         m_tex = tex;
+        m_normal = Vector3f(0.0f, 0.0f, 0.0f); // Координаты по умолчанию 0, 0, 0
     }
 };
 
@@ -36,7 +38,9 @@ public:
         m_pEffect = NULL;
         m_scale = 0.0f;
         m_directionalLight.Color = Vector3f(1.0f, 1.0f, 1.0f);
-        m_directionalLight.AmbientIntensity = 0.5f;
+        m_directionalLight.AmbientIntensity = 0.0f;
+        m_directionalLight.DiffuseIntensity = 0.75f;
+        m_directionalLight.Direction = Vector3f(1.0f, 0.0, 0.0);
     }
 
     ~Main()
@@ -48,10 +52,15 @@ public:
 
     bool Init()
     {
+        // Векторы, описывающие камеру по-умолчанию
+        Vector3f Pos(0.0f, 0.0f, -3.0f);
+        Vector3f Target(0.0f, 0.0f, 1.0f);
+        Vector3f Up(0.0, 1.0f, 0.0f);
+
         m_pGameCamera = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-        CreateVertexBuffer();
-        CreateIndexBuffer();
+        CreateVertexBuffer(Indices, ARRAY_SIZE_IN_ELEMENTS(Indices));
+        CreateIndexBuffer(Indices, sizeof(Indices));
 
         m_pEffect = new LightingTechnique();
 
@@ -64,7 +73,7 @@ public:
 
         m_pEffect->SetTextureUnit(0);
 
-        m_pTexture = new Texture(GL_TEXTURE_2D, "est.png");
+        m_pTexture = new Texture(GL_TEXTURE_2D, "D:/Learning/Graphics/Labs/LW-3/Graphics-Lab3/Graphics---Lab3/Graphics - Lab3/test.png");
 
         if (!m_pTexture->Load()) {
             return false;
@@ -97,19 +106,30 @@ public:
         // Настройка перспективы
         p.SetPerspectiveProj(60.0f, WINDOW_WIDTH, WINDOW_HEIGHT, 1.0f, 100.0f);
         m_pEffect->SetWVP(p.GetTrans()); // Настройка мировой позиции
+        // вычисление матрицы мировых преобразований, отдельно от матрицы WVP
+        const Matrix4f& WorldTransformation = p.GetWorldTrans();
+        // Устанавливаем матрицу мировых преобразований
+        m_pEffect->SetWorldMatrix(WorldTransformation);
         m_pEffect->SetDirectionalLight(m_directionalLight); // Настройка освящения
 
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
         glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)12);
+        // включаем и выключаем 3 атрибут вершины и указываем смещение
+        // нормалей внутри вершинного буфере.
+        // Смещение равно 20, так как перед нормалью позиция (12 байт)
+        // и координаты текстуры (8 байт)
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)20);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
         m_pTexture->Bind(GL_TEXTURE0);
         glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(2);
 
         glutSwapBuffers();
     }
@@ -151,14 +171,43 @@ public:
     }
 
 private:
+    // функция принимает массив индексов, получает вершины треугольников,
+    // полагаясь на них, и вычисляет нормали
+    void CalcNormals(const unsigned int* pIndices, unsigned int IndexCount,
+        Vertex* pVertices, unsigned int VertexCount) {
+        // В первом цикле мы только набираем нормали для каждой тройки вершин. Для каждого
+        // треугольника она вычисляется
+        // как векторное произведение двух сторон, которые получаются из вершин треугольника
+        for (unsigned int i = 0; i < IndexCount; i += 3) {
+            unsigned int Index0 = pIndices[i];
+            unsigned int Index1 = pIndices[i + 1];
+            unsigned int Index2 = pIndices[i + 2];
+            Vector3f v1 = pVertices[Index1].m_pos - pVertices[Index0].m_pos;
+            Vector3f v2 = pVertices[Index2].m_pos - pVertices[Index0].m_pos;
+            Vector3f Normal = v1.Cross(v2);
+            Normal.Normalize();
+
+            pVertices[Index0].m_normal += Normal;
+            pVertices[Index1].m_normal += Normal;
+            pVertices[Index2].m_normal += Normal;
+        }
+
+        for (unsigned int i = 0; i < VertexCount; i++) {
+            pVertices[i].m_normal.Normalize();
+        }
+    }
 
     // Создание буфера вершин
-    void CreateVertexBuffer()
+    void CreateVertexBuffer(const unsigned int* pIndices, unsigned int IndexCount)
     {
         Vertex Vertices[4] = { Vertex(Vector3f(-1.0f, -1.0f, 0.5773f), Vector2f(0.0f, 0.0f)),
                                Vertex(Vector3f(0.0f, -1.0f, -1.15475), Vector2f(0.5f, 0.0f)),
                                Vertex(Vector3f(1.0f, -1.0f, 0.5773f),  Vector2f(1.0f, 0.0f)),
                                Vertex(Vector3f(0.0f, 1.0f, 0.0f),      Vector2f(0.5f, 1.0f)) };
+
+        unsigned int VertexCount = ARRAY_SIZE_IN_ELEMENTS(Vertices);
+
+        CalcNormals(pIndices, IndexCount, Vertices, VertexCount);
 
         glGenBuffers(1, &m_VBO);
         glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
