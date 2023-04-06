@@ -60,7 +60,6 @@ public:
 
         m_pGameCamera = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT, Pos, Target, Up);
 
-        unsigned int Indices[] = { 0, 3, 1,
         unsigned int Indices[] = { 0, 2, 1,
                                    0, 3, 2 };
 
@@ -105,6 +104,12 @@ public:
         PointLight pl[3];
         pl[0].DiffuseIntensity = 0.5f;
         pl[0].Color = Vector3f(1.0f, 0.0f, 0.0f);
+        pl[0].Position = Vector3f(sinf(m_scale) * 10, 1.0f, cosf(m_scale) * 10);
+        pl[0].Attenuation.Linear = 0.1f;
+
+        pl[1].DiffuseIntensity = 0.5f;
+        pl[1].Color = Vector3f(0.0f, 1.0f, 0.0f);
+        pl[1].Position = Vector3f(sinf(m_scale + 2.1f) * 10, 1.0f, cosf(m_scale + 2.1f) * 10);
         pl[1].Attenuation.Linear = 0.1f;
 
         pl[2].DiffuseIntensity = 0.5f;
@@ -112,13 +117,14 @@ public:
         pl[2].Position = Vector3f(sinf(m_scale + 4.2f) * 10, 1.0f, cosf(m_scale + 4.2f) * 10);
         pl[2].Attenuation.Linear = 0.1f;
 
+        m_pEffect->SetPointLights(3, pl);
+
         // Конвейер для камеры
         Pipeline p;
         // Вращение
-        p.Rotate(0.0f, m_scale, 0.0f);
         p.Rotate(0.0f, 0.0f, 0.0f);
         // Мировая позиция
-        p.WorldPos(0.0f, 0.0f, 3.0f);
+        p.WorldPos(0.0f, 0.0f, 1.0f);
         // Настройка позиции камеры
         p.SetCamera(m_pGameCamera->GetPos(), m_pGameCamera->GetTarget(), m_pGameCamera->GetUp());
         // Настройка перспективы
@@ -147,6 +153,7 @@ public:
         glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)20);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
         m_pTexture->Bind(GL_TEXTURE0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
@@ -225,8 +232,6 @@ private:
     // Создание буфера вершин
     void CreateVertexBuffer(const unsigned int* pIndices, unsigned int IndexCount)
     {
-                               Vertex(Vector3f(0.0f, -1.0f, -1.15475), Vector2f(0.5f, 0.0f)),
-                               Vertex(Vector3f(1.0f, -1.0f, 0.5773f),  Vector2f(1.0f, 0.0f)),
         Vertex Vertices[4] = { Vertex(Vector3f(-10.0f, -2.0f, -10.0f), Vector2f(0.0f, 0.0f)),
                                Vertex(Vector3f(10.0f, -2.0f, -10.0f), Vector2f(1.0f, 0.0f)),
                                Vertex(Vector3f(10.0f, -2.0f, 10.0f), Vector2f(1.0f, 1.0f)),
