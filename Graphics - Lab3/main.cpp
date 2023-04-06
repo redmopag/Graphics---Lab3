@@ -7,6 +7,7 @@
 #include "texture.h"
 #include "lighting_technique.h"
 #include "glut_backend.h"
+#include "util.h"
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
@@ -59,6 +60,11 @@ public:
 
         m_pGameCamera = new Camera(WINDOW_WIDTH, WINDOW_HEIGHT);
 
+        unsigned int Indices[] = { 0, 3, 1,
+                                   1, 3, 2,
+                                   2, 3, 0,
+                                   1, 2, 0 };
+
         CreateVertexBuffer(Indices, ARRAY_SIZE_IN_ELEMENTS(Indices));
         CreateIndexBuffer(Indices, sizeof(Indices));
 
@@ -66,6 +72,7 @@ public:
 
         if (!m_pEffect->Init())
         {
+            printf("Error initializing the lighting technique\n");
             return false;
         }
 
@@ -105,7 +112,7 @@ public:
         p.SetCamera(m_pGameCamera->GetPos(), m_pGameCamera->GetTarget(), m_pGameCamera->GetUp());
         // Настройка перспективы
         p.SetPerspectiveProj(60.0f, WINDOW_WIDTH, WINDOW_HEIGHT, 1.0f, 100.0f);
-        m_pEffect->SetWVP(p.GetTrans()); // Настройка мировой позиции
+        m_pEffect->SetWVP(p.GetWVPTrans()); // Настройка мировой позиции
         // вычисление матрицы мировых преобразований, отдельно от матрицы WVP
         const Matrix4f& WorldTransformation = p.GetWorldTrans();
         // Устанавливаем матрицу мировых преобразований
@@ -153,13 +160,17 @@ public:
         case 'q':
             glutLeaveMainLoop();
             break;
-
         case 'a':
             m_directionalLight.AmbientIntensity += 0.05f;
             break;
-
         case 's':
             m_directionalLight.AmbientIntensity -= 0.05f;
+            break;
+        case 'z':
+            m_directionalLight.DiffuseIntensity += 0.05f;
+            break;
+        case 'x':
+            m_directionalLight.DiffuseIntensity -= 0.05f;
             break;
         }
     }
@@ -215,7 +226,7 @@ private:
     }
 
     // Создание буфера индексов
-    void CreateIndexBuffer()
+    void CreateIndexBuffer(const unsigned int* pIndices, unsigned int SizeInBytes)
     {
         unsigned int Indices[] = { 0, 3, 1,
                                    1, 3, 2,
@@ -224,7 +235,7 @@ private:
 
         glGenBuffers(1, &m_IBO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, SizeInBytes, pIndices, GL_STATIC_DRAW);
     }
 
     GLuint m_VBO;

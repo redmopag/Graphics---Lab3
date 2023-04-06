@@ -96,6 +96,15 @@ struct Vector3f
     }
 };
 
+inline Vector3f operator+(const Vector3f& l, const Vector3f& r)
+{
+    Vector3f Ret(l.x + r.x,
+        l.y + r.y,
+        l.z + r.z);
+
+    return Ret;
+}
+
 // Вычитание двуз векторов
 inline Vector3f operator-(const Vector3f& l, const Vector3f& r)
 {

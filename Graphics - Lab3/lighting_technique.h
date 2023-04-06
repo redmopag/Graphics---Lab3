@@ -20,7 +20,7 @@ public:
     virtual bool Init(); // Создание шейдеров вызывает методы добавления шейдеров и линковки с проверкой
 
     // Настройка мировых координат
-    void SetWVP(const Matrix4f* WVP);
+    void SetWVP(const Matrix4f& WVP);
     // Функция для отправления матрицы мировых преобразований
     void SetWorldMatrix(const Matrix4f& WVP);
     // Настройка текстур
