@@ -29,10 +29,22 @@ public:
     // Ещё нужна для вектора направления и интенсивности рассеивания
     void SetDirectionalLight(const DirectionLight& Light);
 
+    // Настройка положения глаза
+    void SetEyeWorldPos(const Vector3f& EyeWorldPos);
+    // Настройка интенсивности отражения
+    void SetMatSpecularIntensity(float Intensity);
+    // Настройка коэфициента материала
+    void SetMatSpecularPower(float Power);
+
 private:
     GLuint m_WVPLocation; // Система координат камеры
     GLuint m_WorldMatrixLocation; // Матрица мировых преобразований
     GLuint m_samplerLocation; // Семплер для текстуры
+
+    GLuint m_eyeWorldPosition; // Позиция галаз
+    GLuint m_matSpecularIntensityLocation; // Интенсивность освящения
+    GLuint m_matSpecularPowerLocation; // Коэфициент материала
+
     struct {
         GLuint Color;
         GLuint AmbientIntensity;
