@@ -206,10 +206,10 @@ bool LightingTechnique::Init()
     m_matSpecularIntensityLocation = GetUniformLocation("gMatSpecularIntensity");
     m_matSpecularPowerLocation = GetUniformLocation("gSpecularPower");
 
-    m_dirLightLocation.Color = GetUniformLocation("gDirectionalLight.Color");
-    m_dirLightLocation.AmbientIntensity = GetUniformLocation("gDirectionalLight.AmbientIntensity");
+    m_dirLightLocation.Color = GetUniformLocation("gDirectionalLight.Base.Color");
+    m_dirLightLocation.AmbientIntensity = GetUniformLocation("gDirectionalLight.Base.AmbientIntensity");
     m_dirLightLocation.Direction = GetUniformLocation("gDirectionalLight.Direction");
-    m_dirLightLocation.DiffuseIntensity = GetUniformLocation("gDirectionalLight.DiffuseIntensity");
+    m_dirLightLocation.DiffuseIntensity = GetUniformLocation("gDirectionalLight.Base.DiffuseIntensity");
 
     m_numPointLightsLocation = GetUniformLocation("gNumPointLights");
     m_numSpotLightsLocation = GetUniformLocation("gNumSpotLights");

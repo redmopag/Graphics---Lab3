@@ -3,9 +3,6 @@
 #include "technique.h"
 #include "math_3d.h"
 
-// Определение направления света
-#define MAX_POINT_LIGHTS 3
-
 // Базовое освящение
 struct BaseLight
 {
