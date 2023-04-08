@@ -300,7 +300,7 @@ int main(int argc, char** argv)
     glUniform1i(gSampler, 0);
 
     // Открываем изображение
-    pTexture = new Texture(GL_TEXTURE_2D, "D:/Learning/Graphics/Labs/LW-3/Graphics-Lab3/Graphics---Lab3/Graphics - Lab3/est.png");
+    pTexture = new Texture(GL_TEXTURE_2D, "D:/est.png");
 
     // Загружаем изображение в память программы
     if (!pTexture->Load()) {
