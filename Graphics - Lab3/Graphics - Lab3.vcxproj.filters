@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{d36694a3-3c4a-4c6e-9c0a-51b03b54da70}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -37,6 +40,12 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="lighting_technique.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="stb_image.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="util.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -68,5 +77,16 @@
     <ClInclude Include="util.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="types.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lighting.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="lighting.vs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

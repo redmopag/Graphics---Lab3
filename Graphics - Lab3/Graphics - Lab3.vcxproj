@@ -104,13 +104,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\ImageMagick Library for c++\ImageMagick-7.1.1-Q16-HDRI\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Source\Include;..\Source\Include\assimp5</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\ImageMagick Library for c++\ImageMagick-7.1.1-Q16-HDRI\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CORE_RL_MagickCore_.lib;CORE_RL_Magick++_.lib;CORE_RL_MagickWand_.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Source\Lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32.lib;freeglutd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -139,8 +139,10 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math_3d.cpp" />
     <ClCompile Include="pipeline.cpp" />
+    <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="technique.cpp" />
     <ClCompile Include="texture.cpp" />
+    <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="callbacks.h" />
@@ -151,7 +153,12 @@
     <ClInclude Include="pipeline.h" />
     <ClInclude Include="technique.h" />
     <ClInclude Include="texture.h" />
+    <ClInclude Include="types.h" />
     <ClInclude Include="util.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lighting.fs" />
+    <None Include="lighting.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

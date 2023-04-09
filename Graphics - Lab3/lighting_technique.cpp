@@ -57,7 +57,7 @@ struct BaseLight                                                                
                                                                                     \n\
 struct DirectionalLight                                                             \n\
 {                                                                                   \n\
-    struct BaseLight Base;                                                          \n\
+    BaseLight Base;                                                          \n\
     vec3 Direction;                                                                 \n\
 };                                                                                  \n\
                                                                                     \n\
@@ -70,7 +70,7 @@ struct Attenuation                                                              
                                                                                     \n\
 struct PointLight                                                                           \n\
 {                                                                                           \n\
-    struct BaseLight Base;                                                                  \n\
+    BaseLight Base;                                                                  \n\
     vec3 Position;                                                                          \n\
     Attenuation Atten;                                                                      \n\
 };                                                                                          \n\
@@ -83,7 +83,7 @@ uniform vec3 gEyeWorldPos;                                                      
 uniform float gMatSpecularIntensity;                                                        \n\
 uniform float gSpecularPower;                                                               \n\
                                                                                             \n\
-vec4 CalcLightInternal(struct BaseLight Light, vec3 LightDirection, vec3 Normal)            \n\
+vec4 CalcLightInternal(BaseLight Light, vec3 LightDirection, vec3 Normal)            \n\
 {                                                                                           \n\
     vec4 AmbientColor = vec4(Light.Color, 1.0f) * Light.AmbientIntensity;                   \n\
     float DiffuseFactor = dot(Normal, -LightDirection);                                     \n\
@@ -178,10 +178,10 @@ bool LightingTechnique::Init()
     m_matSpecularIntensityLocation = GetUniformLocation("gMatSpecularIntensity");
     m_matSpecularPowerLocation = GetUniformLocation("gSpecularPower");
 
-    m_dirLightLocation.Color = GetUniformLocation("gDirectionalLight.Color");
-    m_dirLightLocation.AmbientIntensity = GetUniformLocation("gDirectionalLight.AmbientIntensity");
+    m_dirLightLocation.Color = GetUniformLocation("gDirectionalLight.Base.Color");
+    m_dirLightLocation.AmbientIntensity = GetUniformLocation("gDirectionalLight.Base.AmbientIntensity");
     m_dirLightLocation.Direction = GetUniformLocation("gDirectionalLight.Direction");
-    m_dirLightLocation.DiffuseIntensity = GetUniformLocation("gDirectionalLight.DiffuseIntensity");
+    m_dirLightLocation.DiffuseIntensity = GetUniformLocation("gDirectionalLight.Base.DiffuseIntensity");
 
     m_numPointLightsLocation = GetUniformLocation("gNumPointLights");
     //------------------------------------------------------------------------------------------------

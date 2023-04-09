@@ -78,7 +78,7 @@ public:
 
         m_pEffect->SetTextureUnit(0);
 
-        m_pTexture = new Texture(GL_TEXTURE_2D, "D:/Learning/Graphics/Labs/LW-3/Graphics-Lab3/Graphics---Lab3/Graphics - Lab3/test.png");
+        m_pTexture = new Texture(GL_TEXTURE_2D, "test.png");
 
         if (!m_pTexture->Load()) {
             return false;
