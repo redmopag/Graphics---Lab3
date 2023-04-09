@@ -291,6 +291,10 @@ int main(int argc, char** argv)
     glCullFace(GL_BACK);
     glEnable(GL_CULL_FACE);
 
+    int texture_units = 0;
+    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &texture_units);
+    printf("Number of texture units %d\n", texture_units);
+
     CreateVertexBuffer();
     CreateIndexBuffer();
 
@@ -300,7 +304,7 @@ int main(int argc, char** argv)
     glUniform1i(gSampler, 0);
 
     // Открываем изображение
-    pTexture = new Texture(GL_TEXTURE_2D, "D:/est.png");
+    pTexture = new Texture(GL_TEXTURE_2D, "test2.jpg");
 
     // Загружаем изображение в память программы
     if (!pTexture->Load()) {
