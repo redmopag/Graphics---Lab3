@@ -78,7 +78,7 @@ public:
 
         m_pEffect->SetTextureUnit(0);
 
-        m_pTexture = new Texture(GL_TEXTURE_2D, "D:/Learning/Graphics/Labs/LW-3/Graphics-Lab3/Graphics---Lab3/Graphics - Lab3/test.png");
+        m_pTexture = new Texture(GL_TEXTURE_2D, "test.png");
 
         if (!m_pTexture->Load()) {
             return false;
@@ -177,21 +177,23 @@ public:
     // Реагирование на нажатие ввод с клавиши: выход, увеличение освящения, уменьжение освящения
     virtual void KeyboardCB(unsigned char Key, int x, int y)
     {
+        float scaleOfChange = 0.1f;
+
         switch (Key) {
         case 'q':
             glutLeaveMainLoop();
             break;
         case 'a':
-            m_directionalLight.AmbientIntensity += 0.05f;
+            m_directionalLight.AmbientIntensity += scaleOfChange;
             break;
         case 's':
-            m_directionalLight.AmbientIntensity -= 0.05f;
+            m_directionalLight.AmbientIntensity -= scaleOfChange;
             break;
         case 'z':
-            m_directionalLight.DiffuseIntensity += 0.05f;
+            m_directionalLight.DiffuseIntensity += scaleOfChange;
             break;
         case 'x':
-            m_directionalLight.DiffuseIntensity -= 0.05f;
+            m_directionalLight.DiffuseIntensity -= scaleOfChange;
             break;
         }
     }
@@ -272,7 +274,7 @@ int main(int argc, char** argv)
 {
     GLUTBackendInit(argc, argv);
 
-    if (!GLUTBackendCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, 32, false, "OpenGL tutors")) {
+    if (!GLUTBackendCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, 32, false, "SpotLight")) {
         return 1;
     }
 
