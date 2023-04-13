@@ -12,6 +12,7 @@
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
 
+// Содержит координаты фигруы, текстуры и нормали для света
 struct Vertex
 {
     Vector3f m_pos; // Координата фигуры
@@ -51,6 +52,7 @@ public:
         delete m_pTexture;
     }
 
+    // Инициализация камеры, фигуры, света
     bool Init()
     {
         // Векторы, описывающие камеру по-умолчанию
@@ -92,6 +94,7 @@ public:
         GLUTBackendRun(this);
     }
 
+    // Рендер картинки, так же камера, фигура, свет
     virtual void RenderSceneCB()
     {
         m_pGameCamera->OnRender();
