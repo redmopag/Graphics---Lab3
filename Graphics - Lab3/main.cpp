@@ -181,6 +181,7 @@ public:
 
         switch (Key) {
         case 'q':
+        case 27:
             glutLeaveMainLoop();
             break;
         case 'a':
@@ -274,7 +275,7 @@ int main(int argc, char** argv)
 {
     GLUTBackendInit(argc, argv);
 
-    if (!GLUTBackendCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, 32, false, "SpotLight")) {
+    if (!GLUTBackendCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, 60, true, "SpotLight")) {
         return 1;
     }
 
