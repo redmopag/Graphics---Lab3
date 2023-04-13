@@ -304,7 +304,7 @@ int main(int argc, char** argv)
     glUniform1i(gSampler, 0);
 
     // Открываем изображение
-    pTexture = new Texture(GL_TEXTURE_2D, "test2.jpg");
+    pTexture = new Texture(GL_TEXTURE_2D, "test.png");
 
     // Загружаем изображение в память программы
     if (!pTexture->Load()) {
