@@ -199,18 +199,15 @@ bool LightingTechnique::Init()
     //------------------------------------------------------------------------------------------------
     // uniform-переменные
     m_WVPLocation = GetUniformLocation("gWVP");
-    m_samplerLocation = GetUniformLocation("gSampler");
     m_WorldMatrixLocation = GetUniformLocation("gWorld");
-
+    m_samplerLocation = GetUniformLocation("gSampler");
     m_eyeWorldPosLocation = GetUniformLocation("gEyeWorldPos");
-    m_matSpecularIntensityLocation = GetUniformLocation("gMatSpecularIntensity");
-    m_matSpecularPowerLocation = GetUniformLocation("gSpecularPower");
-
     m_dirLightLocation.Color = GetUniformLocation("gDirectionalLight.Base.Color");
     m_dirLightLocation.AmbientIntensity = GetUniformLocation("gDirectionalLight.Base.AmbientIntensity");
     m_dirLightLocation.Direction = GetUniformLocation("gDirectionalLight.Direction");
     m_dirLightLocation.DiffuseIntensity = GetUniformLocation("gDirectionalLight.Base.DiffuseIntensity");
-
+    m_matSpecularIntensityLocation = GetUniformLocation("gMatSpecularIntensity");
+    m_matSpecularPowerLocation = GetUniformLocation("gSpecularPower");
     m_numPointLightsLocation = GetUniformLocation("gNumPointLights");
     m_numSpotLightsLocation = GetUniformLocation("gNumSpotLights");
     //------------------------------------------------------------------------------------------------
